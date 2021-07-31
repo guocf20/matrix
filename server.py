@@ -73,7 +73,7 @@ class BlockChain:
 blockchain = BlockChain("coin.db")
 while True:
     print("mining.....\n")
-    time.sleep(60)
+    time.sleep(10)
     prev=blockchain.get_prev_block()
     new_block=Block.next_block(prev)
     blockchain.add(new_block)
