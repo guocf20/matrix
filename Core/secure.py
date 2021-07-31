@@ -2,9 +2,7 @@ import secrets
 import ecdsa
 import binascii
 
-
 def sign_msg(private_key, msg):
-
     sk=ecdsa.SigningKey.from_string(binascii.unhexlify(private_key), curve=ecdsa.SECP256k1)
     vk=sk.verifying_key
     signature = sk.sign(msg)
@@ -15,7 +13,6 @@ def sign_msg(private_key, msg):
     print("after sign:"+binascii.hexlify(signature).decode())
     return binascii.hexlify(signature).decode()
 
-
 def verify_from_string(public_key, signed_msg, msg):
     vk = ecdsa.VerifyingKey.from_string(binascii.unhexlify(public_key), curve=ecdsa.SECP256k1)
     print("compress signature:" + vk.to_string("compressed").hex())
@@ -25,10 +22,8 @@ def verify_from_string(public_key, signed_msg, msg):
         print(ret)
         return True
     except:
-
         print("verify failed")
         return False
-
 
 def gen_private_key():
     bits = secrets.randbits(256)

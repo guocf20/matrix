@@ -79,9 +79,3 @@ while True:
     blockchain.add(new_block)
     blockchain.print_blocks()
 
-# Add blocks to the chain
-#for i in range(0, height):
-#    new_block=Block.next_block(previous_block)
-#    new_block.print_block()
-#    blockchain.append(new_block)
-#    previous_block=new_block
