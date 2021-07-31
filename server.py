@@ -3,10 +3,12 @@ import datetime as date
 import os
 import time
 import json
+import threading
 
 address="guocf-addr"
 class Block:
     def __init__(self, index, timestamp, data, previous_hash):
+        self.version = 1
         self.index = index
         self.timestamp = timestamp
         self.data = data
@@ -71,11 +73,34 @@ class BlockChain:
 #previous_block = blockchain[0]
 
 blockchain = BlockChain("coin.db")
-while True:
-    print("mining.....\n")
-    time.sleep(10)
-    prev=blockchain.get_prev_block()
-    new_block=Block.next_block(prev)
-    blockchain.add(new_block)
-    blockchain.print_blocks()
+def mining_thread():
+    print("starting mining thread\n")
+    while True:
+        print("mining...\n")
+        time.sleep(10)
+        prev=blockchain.get_prev_block()
+        new_block=Block.next_block(prev)
+        blockchain.add(new_block)
+        blockchain.print_blocks()
+	
+def rpc_thread():
+    while True:
+        print("rpc_thread\n")
+        time.sleep(5)
+
+mining_t=threading.Thread(target=mining_thread, name="mining thread")
+mining_t.start()
+
+rpc_t=threading.Thread(target=rpc_thread, name="rpc_thread")
+rpc_t.start()
+rpc_t.join()
+mining_t.join()
+
+#while True:
+#    print("mining.....\n")
+#    time.sleep(10)
+#    prev=blockchain.get_prev_block()
+#    new_block=Block.next_block(prev)
+#    blockchain.add(new_block)
+#    blockchain.print_blocks()
 
