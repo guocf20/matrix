@@ -4,6 +4,7 @@ import os
 import time
 import json
 import threading
+from flask import Flask
 
 address="guocf-addr"
 class Block:
@@ -48,6 +49,7 @@ class Block:
         dic["tran"]=self.transactions
         js = json.dumps(dic)
         print(js)
+        return js
 
 
 class BlockChain:
@@ -60,7 +62,7 @@ class BlockChain:
           else:
               pass
 
-      def get_prev_block(self):
+      def get_prev_block():
           return BlockChain.blockchain[-1]
 
       def add(self, block):
@@ -77,8 +79,8 @@ def mining_thread():
     print("starting mining thread\n")
     while True:
         print("mining...\n")
-        time.sleep(10)
-        prev=blockchain.get_prev_block()
+        time.sleep(2)
+        prev=BlockChain.get_prev_block()
         new_block=Block.next_block(prev)
         blockchain.add(new_block)
         blockchain.print_blocks()
@@ -93,9 +95,26 @@ mining_t.start()
 
 rpc_t=threading.Thread(target=rpc_thread, name="rpc_thread")
 rpc_t.start()
+
+app =Flask(__name__)
+
+@app.route("/")
+def getblockheight():
+    return str(len(BlockChain.blockchain))
+
+@app.route('/hello')
+def hello():
+    return 'Hello, World'
+
+@app.route('/lastblock')
+def getlastblock():
+    return BlockChain.get_prev_block().block2json()
+
+app.debug=True
+app.run()
+
 rpc_t.join()
 mining_t.join()
-
 #while True:
 #    print("mining.....\n")
 #    time.sleep(10)
