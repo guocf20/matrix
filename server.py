@@ -6,6 +6,8 @@ import json
 import threading
 from flask import Flask
 
+block_base="blocks/"
+
 address="guocf-addr"
 class Block:
     def __init__(self, index, timestamp, data, previous_hash):
@@ -21,6 +23,7 @@ class Block:
         coinbase["value"]=1
         self.transactions=coinbase
         self.hash = self.hash_block()
+        self.write_block_file()
 
     def hash_block(self):
         sha = hasher.sha256()
@@ -50,7 +53,9 @@ class Block:
         js = json.dumps(dic)
         print(js)
         return js
-
+    def write_block_file(self):
+        with open(block_base+str(self.index), "w") as f:
+            f.write(self.block2json())
 
 class BlockChain:
       blockchain=[]
