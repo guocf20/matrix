@@ -110,16 +110,33 @@ def hello():
 def getlastblock():
     return BlockChain.get_prev_block().block2json()
 
-app.debug=True
-app.run()
+def rest_thread():
+    app.run(debug=True, use_reloader=False)
 
-rpc_t.join()
-mining_t.join()
-#while True:
-#    print("mining.....\n")
-#    time.sleep(10)
-#    prev=blockchain.get_prev_block()
-#    new_block=Block.next_block(prev)
-#    blockchain.add(new_block)
-#    blockchain.print_blocks()
+
+rest_t=threading.Thread(target=rest_thread)
+rest_t.start()
+
+import asyncio
+import datetime
+import random
+import websockets
+
+async def websocket_time(websocket, path):
+    while True:
+        #now = datetime.datetime.utcnow().isoformat() + "Z"
+        now = BlockChain.get_prev_block().block2json()
+        await websocket.send(now)
+        await asyncio.sleep(random.random() * 3)
+
+
+def websocket_thread():
+    new_loop= asyncio.new_event_loop()
+    asyncio.set_event_loop(new_loop)   
+    start_server = websockets.serve(websocket_time, "127.0.0.1", 5678)
+    new_loop.run_until_complete(start_server)
+    new_loop.run_forever()
+
+main_websocket_t = threading.Thread(target=websocket_thread)
+main_websocket_t.start()
 
