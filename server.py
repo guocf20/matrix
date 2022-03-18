@@ -5,6 +5,7 @@ import time
 import json
 import threading
 from flask import Flask
+import os
 
 block_base="blocks/"
 
@@ -79,6 +80,9 @@ class BlockChain:
 #blockchain = [Block.create_genesis_block()]
 #previous_block = blockchain[0]
 
+isExist = os.path.exists(block_base)
+if isExist == False:
+    os.makedirs(block_base, exist_ok=False)
 blockchain = BlockChain("coin.db")
 def mining_thread():
     print("starting mining thread\n")
@@ -116,11 +120,12 @@ def getlastblock():
     return BlockChain.get_prev_block().block2json()
 
 def rest_thread():
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True, use_reloader=False, host='0.0.0.0')
 
 
 rest_t=threading.Thread(target=rest_thread)
 rest_t.start()
+
 
 import asyncio
 import datetime
